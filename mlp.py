@@ -40,9 +40,13 @@ class MLP:
 
 def gradient_updates_momentum(cost, params, learning_rate, momentum):
     updates = []
+    print params
     for param in params:
+        # init deta_w
         param_update = theano.shared(param.get_value() * 0.0, broadcastable=param.broadcastable)
-        updates.append((param, param - learning_rate * param_update))
+        # w = w - eta* deta_w
+        updates.append((param, param - learning_rate * (momentum * param_update + (1 - momentum) * T.grad(cost, param))))
+        # deta_w 更新
         updates.append((param_update, momentum * param_update + (1 - momentum) * T.grad(cost, param)))
     return updates
 
@@ -77,6 +81,7 @@ mlp_output = T.vector('mlp_output')
 cost = mlp.square_error(mlp_input, mlp_output)
 learning_rate = 0.01
 momentum = 0.9
+# updates    (shared_variable, new_expression)
 train = theano.function([mlp_input, mlp_output], cost,
                         updates=gradient_updates_momentum(cost, mlp.params, learning_rate, momentum))
 mlp_output = theano.function([mlp_input], mlp.output(mlp_input))
@@ -87,5 +92,5 @@ while iteration < max_iteration:
     current_cost = train(X, y)
     current_output = mlp_output(X)
     accuracy = np.mean((current_output > 0.5) == y)
-    print 'iteration :  %d ,accuracy : %f ,cost: %f' % (iteration, accuracy, current_cost)
+    print 'iteration :  %d ,accuracy : %f ,cost: %f' % (iteration + 1, accuracy, current_cost)
     iteration += 1
