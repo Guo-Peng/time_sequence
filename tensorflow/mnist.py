@@ -32,11 +32,11 @@ mnist = input_data.read_data_sets("/Users/Peterkwok/GitHub/time_sequence/tensorf
 x = tf.placeholder(tf.float32, [None, 784])
 y_ = tf.placeholder(tf.float32, [None, 10])
 
-W = tf.Variable(tf.zeros([784, 100]))
-b = tf.Variable(tf.zeros([100]))
+W = tf.Variable(tf.truncated_normal(shape=[784, 100], stddev=0.1))
+b = tf.Variable(tf.constant(0.1, shape=[100]))
 
-W_2 = tf.Variable(tf.zeros([100, 10]))
-b_2 = tf.Variable(tf.zeros([10]))
+W_2 = tf.Variable(tf.truncated_normal(shape=[100, 10], stddev=0.1))
+b_2 = tf.Variable(tf.constant(0.1, shape=[10]))
 
 y_1 = tf.sigmoid(tf.matmul(x, W) + b)
 
